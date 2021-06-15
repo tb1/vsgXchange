@@ -50,7 +50,7 @@ namespace vsgXchange
 
         bool getFeatures(Features& features) const override;
 
-    protected:
+    private:
         class Implementation;
         std::unique_ptr<Implementation> _implementation;
     };
@@ -67,7 +67,7 @@ namespace vsgXchange
 
         bool getFeatures(Features& features) const override;
 
-    protected:
+    private:
         class Implementation;
         std::unique_ptr<Implementation> _implementation;
     };

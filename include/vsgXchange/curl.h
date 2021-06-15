@@ -45,7 +45,7 @@ namespace vsgXchange
         /// specify whether libcurl should be initialized and cleaned up by vsgXchange::curl.
         static bool s_do_curl_global_init_and_cleanup; // defaults to true
 
-    protected:
+    private:
         class Implementation;
 
         mutable std::mutex _mutex;
