@@ -3,7 +3,7 @@
 set(EXTRA_DEFINES)
 set(EXTRA_INCLUDES)
 
-SET(HEADER_PATH ${CMAKE_SOURCE_DIR}/include/vsgXchange)
+SET(HEADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../include/vsgXchange)
 
 set(HEADERS
     ${VSGXCHANGE_VERSION_HEADER}
@@ -53,8 +53,7 @@ endif()
 
 # create the version header
 set(VSGXCHANGE_VERSION_HEADER "${PROJECT_BINARY_DIR}/include/vsgXchange/Version.h")
-configure_file("${CMAKE_SOURCE_DIR}/src/all/Version.h.in" "${VSGXCHANGE_VERSION_HEADER}")
-
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/all/Version.h.in" "${VSGXCHANGE_VERSION_HEADER}")
 
 # create the vsgXchange library
 add_library(vsgXchange ${HEADERS} ${SOURCES})
@@ -83,6 +82,7 @@ target_link_libraries(vsgXchange
     PRIVATE
         ${EXTRA_LIBRARIES}
 )
+add_library(vsgXchange::vsgXchange ALIAS vsgXchange)
 
 install(TARGETS vsgXchange EXPORT vsgXchangeTargets
         LIBRARY DESTINATION lib
@@ -111,15 +111,15 @@ install(EXPORT vsgXchangeTargets
 )
 
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgXchangeConfigVersion.cmake"
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/vsgXchangeConfigVersion.cmake"
     VERSION ${VSGXCHANGE_MAJOR_VERSION}.${VSGXCHANGE_MINOR_VERSION}.${VSGXCHANGE_PATCH_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
 string(REPLACE ";" "\n" FIND_DEPENDENCY_OUT "${FIND_DEPENDENCY}")
-configure_file("${CMAKE_SOURCE_DIR}/src/vsgXchangeConfig.cmake.in" "${CMAKE_BINARY_DIR}/src/vsgXchangeConfig.cmake" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/vsgXchangeConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/vsgXchangeConfig.cmake" @ONLY)
 
-install(FILES "${CMAKE_BINARY_DIR}/src/vsgXchangeConfig.cmake" "${CMAKE_BINARY_DIR}/src/vsgXchangeConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/vsgXchangeConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/vsgXchangeConfigVersion.cmake"
     DESTINATION lib/cmake/vsgXchange
 )
 

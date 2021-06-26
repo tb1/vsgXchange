@@ -72,77 +72,81 @@ if (VULKAN_SDK)
 endif()
 
 find_package(Vulkan REQUIRED)
-find_package(vsg REQUIRED)
-
-add_custom_target(clobber
-    COMMAND git clean -d -f -x
-)
-
-# automatically buil_all_h build target to generate the include/vsg/all.h from the headers in the include/vsg/* directories
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/build/uninstall.cmake
-)
-
-# add clang-foramt build target to enforce a standard code style guide.
-find_program(CLANGFORMAT clang-format)
-if (CLANGFORMAT)
-
-    file(GLOB FILES_TO_FORMAT
-        ${CMAKE_SOURCE_DIR}/include/*/*.h
-        ${CMAKE_SOURCE_DIR}/src/*/*.h ${CMAKE_SOURCE_DIR}/src/*/*.cpp
-        ${CMAKE_SOURCE_DIR}/applications/*/*.h ${CMAKE_SOURCE_DIR}/applications/*/*.cpp)
-
-    # remoe stb_image.h for format list to avoid it being different that it's original source.
-    list(REMOVE_ITEM FILES_TO_FORMAT ${CMAKE_SOURCE_DIR}/src/stbi/stb_image.h)
-    list(REMOVE_ITEM FILES_TO_FORMAT ${CMAKE_SOURCE_DIR}/src/dds/tinyddsloader.h)
-
-    add_custom_target(clang-format
-        COMMAND ${CLANGFORMAT} -i ${FILES_TO_FORMAT}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Automated code format using clang-format"
-    )
+if (NOT TARGET vsg::vsg)
+    find_package(vsg REQUIRED)
 endif()
 
-option(MAINTAINER "Enable maintainer build methods, such as making git branches and tags." OFF)
-if (MAINTAINER)
-
-    #
-    # Provide target for tagging a release
-    #
-    SET(BASE_NAME vsgXchange)
-    SET(VSGXCHANGE_BRANCH ${BASE_NAME}-${VSGXCHANGE_VERSION_MAJOR}.${VSGXCHANGE_VERSION_MINOR})
-
-    SET(GITCOMMAND git)
-
-    IF   (VSGXCHANGE_RELEASE_CANDIDATE EQUAL 0)
-        SET(RELEASE_NAME ${BASE_NAME}-${VSGXCHANGE_VERSION})
-    ELSE()
-        SET(RELEASE_NAME ${BASE_NAME}-${VSGXCHANGE_VERSION}-rc${VSGXCHANGE_RELEASE_CANDIDATE})
-    ENDIF()
-
-    SET(RELEASE_MESSAGE "Release ${RELEASE_NAME}")
-    SET(BRANCH_MESSAGE "Branch ${VSGXCHANGE_BRANCH}")
-
-    add_custom_target(tag-test
-        COMMAND echo ${GITCOMMAND} tag -a ${RELEASE_NAME} -m ${RELEASE_MESSAGE}
-        COMMAND echo ${GITCOMMAND} push origin ${RELEASE_NAME}
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    add_custom_target(clobber
+        COMMAND git clean -d -f -x
     )
 
-    add_custom_target(tag-run
-        COMMAND ${GITCOMMAND} tag -a ${RELEASE_NAME} -m ${RELEASE_MESSAGE}
-        COMMAND ${GITCOMMAND} push origin ${RELEASE_NAME}
+    # automatically buil_all_h build target to generate the include/vsg/all.h from the headers in the include/vsg/* directories
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/build/uninstall.cmake
     )
 
-    add_custom_target(branch-test
-        COMMAND echo ${GITCOMMAND} branch ${VSGXCHANGE_BRANCH}
-        COMMAND echo ${GITCOMMAND} push origin ${VSGXCHANGE_BRANCH}
-    )
+    # add clang-foramt build target to enforce a standard code style guide.
+    find_program(CLANGFORMAT clang-format)
+    if (CLANGFORMAT)
 
-    add_custom_target(branch-run
-        COMMAND ${GITCOMMAND} branch ${VSGXCHANGE_BRANCH}
-        COMMAND ${GITCOMMAND} push origin ${VSGXCHANGE_BRANCH}
-    )
+        file(GLOB FILES_TO_FORMAT
+            ${CMAKE_SOURCE_DIR}/include/*/*.h
+            ${CMAKE_SOURCE_DIR}/src/*/*.h ${CMAKE_SOURCE_DIR}/src/*/*.cpp
+            ${CMAKE_SOURCE_DIR}/applications/*/*.h ${CMAKE_SOURCE_DIR}/applications/*/*.cpp)
 
+        # remoe stb_image.h for format list to avoid it being different that it's original source.
+        list(REMOVE_ITEM FILES_TO_FORMAT ${CMAKE_SOURCE_DIR}/src/stbi/stb_image.h)
+        list(REMOVE_ITEM FILES_TO_FORMAT ${CMAKE_SOURCE_DIR}/src/dds/tinyddsloader.h)
+
+        add_custom_target(clang-format
+            COMMAND ${CLANGFORMAT} -i ${FILES_TO_FORMAT}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Automated code format using clang-format"
+        )
+    endif()
+
+    option(MAINTAINER "Enable maintainer build methods, such as making git branches and tags." OFF)
+    if (MAINTAINER)
+
+        #
+        # Provide target for tagging a release
+        #
+        SET(BASE_NAME vsgXchange)
+        SET(VSGXCHANGE_BRANCH ${BASE_NAME}-${VSGXCHANGE_VERSION_MAJOR}.${VSGXCHANGE_VERSION_MINOR})
+
+        SET(GITCOMMAND git)
+
+        IF   (VSGXCHANGE_RELEASE_CANDIDATE EQUAL 0)
+            SET(RELEASE_NAME ${BASE_NAME}-${VSGXCHANGE_VERSION})
+        ELSE()
+            SET(RELEASE_NAME ${BASE_NAME}-${VSGXCHANGE_VERSION}-rc${VSGXCHANGE_RELEASE_CANDIDATE})
+        ENDIF()
+
+        SET(RELEASE_MESSAGE "Release ${RELEASE_NAME}")
+        SET(BRANCH_MESSAGE "Branch ${VSGXCHANGE_BRANCH}")
+
+        add_custom_target(tag-test
+            COMMAND echo ${GITCOMMAND} tag -a ${RELEASE_NAME} -m ${RELEASE_MESSAGE}
+            COMMAND echo ${GITCOMMAND} push origin ${RELEASE_NAME}
+        )
+
+        add_custom_target(tag-run
+            COMMAND ${GITCOMMAND} tag -a ${RELEASE_NAME} -m ${RELEASE_MESSAGE}
+            COMMAND ${GITCOMMAND} push origin ${RELEASE_NAME}
+        )
+
+        add_custom_target(branch-test
+            COMMAND echo ${GITCOMMAND} branch ${VSGXCHANGE_BRANCH}
+            COMMAND echo ${GITCOMMAND} push origin ${VSGXCHANGE_BRANCH}
+        )
+
+        add_custom_target(branch-run
+            COMMAND ${GITCOMMAND} branch ${VSGXCHANGE_BRANCH}
+            COMMAND ${GITCOMMAND} push origin ${VSGXCHANGE_BRANCH}
+        )
+
+    endif()
 endif()
 
 # source directory for main vsgXchange library
